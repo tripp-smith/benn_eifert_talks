@@ -11,6 +11,8 @@ This project consists of two main educational notebooks, each derived from a tra
 
 Both notebooks combine theoretical explanations with hands-on Python implementations, visualizations, and simulations to make complex financial concepts accessible and interactive.
 
+> **Note:** All diagrams in this README use a dark mode color scheme inspired by UNC baseball dark jerseys, featuring navy blue (#1B3A6B), Carolina blue (#4B9CD3, #7BAFD4), and complementary colors that are easy on the eyes for extended reading.
+
 ```mermaid
 mindmap
   root((Benn Eifert<br/>Talks))
@@ -48,14 +50,14 @@ mindmap
 
 ```mermaid
 graph LR
-    A[Market Sell-Off<br/>Spot Price ↓] --> B[Volatility Spikes<br/>VIX ↑]
-    B --> C[Negative Correlation<br/>ρ ≈ -0.71]
-    C --> D[Downward Skew<br/>OTM Puts > OTM Calls]
+    MarketSellOff["Market Sell-Off<br/>Spot Price ↓"] --> VolatilitySpikes["Volatility Spikes<br/>VIX ↑"]
+    VolatilitySpikes --> NegativeCorrelation["Negative Correlation<br/>ρ ≈ -0.71"]
+    NegativeCorrelation --> DownwardSkew["Downward Skew<br/>OTM Puts > OTM Calls"]
     
-    style A fill:#ff6b6b
-    style B fill:#4ecdc4
-    style C fill:#ffe66d
-    style D fill:#95e1d3
+    style MarketSellOff fill:#1B3A6B
+    style VolatilitySpikes fill:#4B9CD3
+    style NegativeCorrelation fill:#7BAFD4
+    style DownwardSkew fill:#20B2AA
 ```
 
 #### Part 2: Visualizing the Skew Curve
@@ -71,21 +73,21 @@ graph LR
 
 ```mermaid
 graph TB
-    Initial[Initial Spot = $100<br/>ATM Vol = 20%] --> Move[Spot Drops 5%<br/>New Spot = $95]
+    InitialSpot["Initial Spot = $100<br/>ATM Vol = 20%"] --> SpotDrop["Spot Drops 5%<br/>New Spot = $95"]
     
-    Move --> StickyStrike[Sticky Strike Model]
-    Move --> StickyDelta[Sticky Delta Model]
+    SpotDrop --> StickyStrikeModel["Sticky Strike Model"]
+    SpotDrop --> StickyDeltaModel["Sticky Delta Model"]
     
-    StickyStrike --> Fixed[IV at Strike $100<br/>Remains Constant<br/>IV = 20%]
-    StickyStrike --> NewATM1[New ATM Strike $95<br/>IV = 20.33%<br/>Higher than old ATM]
+    StickyStrikeModel --> FixedStrikeIV["IV at Strike $100<br/>Remains Constant<br/>IV = 20%"]
+    StickyStrikeModel --> NewATMStickyStrike["New ATM Strike $95<br/>IV = 20.33%<br/>Higher than old ATM"]
     
-    StickyDelta --> Shift[Curve Shifts Sideways<br/>Maintains Moneyness Structure]
-    StickyDelta --> NewATM2[New ATM Strike $95<br/>Inherits Old ATM Vol<br/>IV = 20%]
-    StickyDelta --> OldATM[Old ATM Strike $100<br/>Now OTM Call<br/>IV = 19.94%]
+    StickyDeltaModel --> CurveShift["Curve Shifts Sideways<br/>Maintains Moneyness Structure"]
+    StickyDeltaModel --> NewATMStickyDelta["New ATM Strike $95<br/>Inherits Old ATM Vol<br/>IV = 20%"]
+    StickyDeltaModel --> OldATMStrike["Old ATM Strike $100<br/>Now OTM Call<br/>IV = 19.94%"]
     
-    style StickyStrike fill:#ff6b6b
-    style StickyDelta fill:#90ee90
-    style NewATM2 fill:#87ceeb
+    style StickyStrikeModel fill:#1B3A6B
+    style StickyDeltaModel fill:#4B9CD3
+    style NewATMStickyDelta fill:#7BAFD4
 ```
 
 #### Part 3: Vanna and the Delta-Hedged Risk Reversal
@@ -97,24 +99,24 @@ graph TB
 
 ```mermaid
 graph TB
-    Start[Initial Portfolio Setup] --> LongPut[Long 25Δ Put<br/>K = $90]
-    Start --> ShortCall[Short 25Δ Call<br/>K = $112]
-    Start --> DeltaHedge[Buy Stock<br/>Δ Hedge]
+    PortfolioSetup["Initial Portfolio Setup"] --> LongPutPosition["Long 25Δ Put<br/>K = $90"]
+    PortfolioSetup --> ShortCallPosition["Short 25Δ Call<br/>K = $112"]
+    PortfolioSetup --> DeltaHedgePosition["Buy Stock<br/>Δ Hedge"]
     
-    LongPut --> Portfolio[Delta-Neutral Portfolio<br/>Δ ≈ 0]
-    ShortCall --> Portfolio
-    DeltaHedge --> Portfolio
+    LongPutPosition --> DeltaNeutralPortfolio["Delta-Neutral Portfolio<br/>Δ ≈ 0"]
+    ShortCallPosition --> DeltaNeutralPortfolio
+    DeltaHedgePosition --> DeltaNeutralPortfolio
     
-    Portfolio --> ScenarioA{Market Scenario}
+    DeltaNeutralPortfolio --> MarketScenario{"Market Scenario"}
     
-    ScenarioA -->|Spot ↓ + Vol ↑| Profit[💰 PROFIT<br/>Long Vega Exposure]
-    ScenarioA -->|Spot ↓ + Vol ↓| Loss[❌ LOSS<br/>Vanna Risk]
-    ScenarioA -->|Spot ↑ + Vol ↓| Profit2[💰 PROFIT<br/>Short Vega Exposure]
+    MarketScenario -->|"Spot ↓ + Vol ↑"| ProfitScenario1["💰 PROFIT<br/>Long Vega Exposure"]
+    MarketScenario -->|"Spot ↓ + Vol ↓"| LossScenario["❌ LOSS<br/>Vanna Risk"]
+    MarketScenario -->|"Spot ↑ + Vol ↓"| ProfitScenario2["💰 PROFIT<br/>Short Vega Exposure"]
     
-    style Profit fill:#90ee90
-    style Profit2 fill:#90ee90
-    style Loss fill:#ff6b6b
-    style Portfolio fill:#87ceeb
+    style ProfitScenario1 fill:#66CDAA
+    style ProfitScenario2 fill:#66CDAA
+    style LossScenario fill:#CD5C5C
+    style DeltaNeutralPortfolio fill:#4B9CD3
 ```
 
 ### Technical Implementation
@@ -149,22 +151,22 @@ After working through this notebook, you will understand:
 
 ```mermaid
 graph TB
-    Market[Market Conditions] --> Check{Compare F vs S}
+    MarketConditions["Market Conditions"] --> ComparePrices{"Compare F vs S"}
     
-    Check -->|F > S<br/>Futures Expensive| HighDemand[Excess Demand<br/>for Long Positions]
-    HighDemand --> PositiveRate[Positive Funding Rate<br/>r > 0]
-    PositiveRate --> Payment1[Longs Pay Shorts<br/>Every 8 Hours]
+    ComparePrices -->|"F > S<br/>Futures Expensive"| ExcessDemand["Excess Demand<br/>for Long Positions"]
+    ExcessDemand --> PositiveFundingRate["Positive Funding Rate<br/>r > 0"]
+    PositiveFundingRate --> LongsPayShorts["Longs Pay Shorts<br/>Every 8 Hours"]
     
-    Check -->|F < S<br/>Futures Cheap| LowDemand[Excess Supply<br/>Short Positions]
-    LowDemand --> NegativeRate[Negative Funding Rate<br/>r < 0]
-    NegativeRate --> Payment2[Shorts Pay Longs<br/>Every 8 Hours]
+    ComparePrices -->|"F < S<br/>Futures Cheap"| ExcessSupply["Excess Supply<br/>Short Positions"]
+    ExcessSupply --> NegativeFundingRate["Negative Funding Rate<br/>r < 0"]
+    NegativeFundingRate --> ShortsPayLongs["Shorts Pay Longs<br/>Every 8 Hours"]
     
-    Payment1 --> Convergence[Price Convergence<br/>F → S]
-    Payment2 --> Convergence
+    LongsPayShorts --> PriceConvergence["Price Convergence<br/>F → S"]
+    ShortsPayLongs --> PriceConvergence
     
-    style PositiveRate fill:#90ee90
-    style NegativeRate fill:#ff6b6b
-    style Convergence fill:#87ceeb
+    style PositiveFundingRate fill:#66CDAA
+    style NegativeFundingRate fill:#CD5C5C
+    style PriceConvergence fill:#4B9CD3
 ```
 
 #### Part 2: Understanding "Delta Neutrality"
@@ -175,23 +177,23 @@ graph TB
 
 ```mermaid
 graph LR
-    Capital[Initial Capital<br/>$10,000] --> LongSpot[Long Spot<br/>Buy Tokens]
-    Capital --> ShortPerp[Short Perpetual<br/>Sell Futures]
+    InitialCapital["Initial Capital<br/>$10,000"] --> LongSpotPosition["Long Spot<br/>Buy Tokens"]
+    InitialCapital --> ShortPerpPosition["Short Perpetual<br/>Sell Futures"]
     
-    LongSpot --> PriceMove1[Price ↑<br/>+Δx]
-    ShortPerp --> PriceMove2[Price ↑<br/>-Δx]
+    LongSpotPosition --> PriceMoveUp["Price ↑<br/>+Δx"]
+    ShortPerpPosition --> PriceMoveDown["Price ↑<br/>-Δx"]
     
-    PriceMove1 --> NetDelta[Net Delta = 0<br/>Price Risk Canceled]
-    PriceMove2 --> NetDelta
+    PriceMoveUp --> NetDeltaZero["Net Delta = 0<br/>Price Risk Canceled"]
+    PriceMoveDown --> NetDeltaZero
     
-    ShortPerp --> Funding[Collect Funding<br/>r > 0]
-    Funding --> TotalReturn[Total Return<br/>≈ Funding Income<br/>50-100% Annualized]
+    ShortPerpPosition --> CollectFunding["Collect Funding<br/>r > 0"]
+    CollectFunding --> TotalReturnValue["Total Return<br/>≈ Funding Income<br/>50-100% Annualized"]
     
-    NetDelta --> TotalReturn
+    NetDeltaZero --> TotalReturnValue
     
-    style NetDelta fill:#87ceeb
-    style Funding fill:#90ee90
-    style TotalReturn fill:#ffe66d
+    style NetDeltaZero fill:#4B9CD3
+    style CollectFunding fill:#66CDAA
+    style TotalReturnValue fill:#DAA520
 ```
 
 #### Part 3: Simulation with Realistic Market Data
@@ -211,31 +213,31 @@ graph LR
 
 ```mermaid
 flowchart TD
-    Start[Start: $10,000] --> BuySpot[Buy Spot Tokens<br/>$10,000 worth]
-    BuySpot --> ShortPerp[Short Perpetual Futures<br/>$10,000 notional]
+    StrategyStart["Start: $10,000"] --> BuySpotTokens["Buy Spot Tokens<br/>$10,000 worth"]
+    BuySpotTokens --> ShortPerpFutures["Short Perpetual Futures<br/>$10,000 notional"]
     
-    ShortPerp --> DailyLoop{Daily Loop}
+    ShortPerpFutures --> DailyLoopDecision{"Daily Loop"}
     
-    DailyLoop --> CalcSpot[Calculate Spot PnL<br/>Price Change × Holdings]
-    DailyLoop --> CalcFutures[Calculate Futures PnL<br/>-Price Change × Holdings]
-    DailyLoop --> CollectFunding[Collect Funding<br/>Position × Funding Rate]
+    DailyLoopDecision --> CalculateSpotPnL["Calculate Spot PnL<br/>Price Change × Holdings"]
+    DailyLoopDecision --> CalculateFuturesPnL["Calculate Futures PnL<br/>-Price Change × Holdings"]
+    DailyLoopDecision --> CollectFundingPayment["Collect Funding<br/>Position × Funding Rate"]
     
-    CalcSpot --> NetPnL[Net PnL Calculation]
-    CalcFutures --> NetPnL
-    CollectFunding --> NetPnL
+    CalculateSpotPnL --> NetPnLCalculation["Net PnL Calculation"]
+    CalculateFuturesPnL --> NetPnLCalculation
+    CollectFundingPayment --> NetPnLCalculation
     
-    NetPnL --> Check{Price Risk?}
-    Check -->|Spot PnL + Futures PnL| Canceled[≈ 0<br/>Delta Neutral]
-    Check -->|Funding Income| Positive[Positive Yield<br/>50-100% Annualized]
+    NetPnLCalculation --> PriceRiskCheck{"Price Risk?"}
+    PriceRiskCheck -->|"Spot PnL + Futures PnL"| DeltaNeutralResult["≈ 0<br/>Delta Neutral"]
+    PriceRiskCheck -->|"Funding Income"| PositiveYieldResult["Positive Yield<br/>50-100% Annualized"]
     
-    Canceled --> TotalReturn[Total Return]
-    Positive --> TotalReturn
+    DeltaNeutralResult --> TotalReturnValue["Total Return"]
+    PositiveYieldResult --> TotalReturnValue
     
-    TotalReturn --> Risks[⚠️ Risks:<br/>Operational, Exchange,<br/>Margin Management]
+    TotalReturnValue --> StrategyRisks["⚠️ Risks:<br/>Operational, Exchange,<br/>Margin Management"]
     
-    style Canceled fill:#87ceeb
-    style Positive fill:#90ee90
-    style Risks fill:#ff6b6b
+    style DeltaNeutralResult fill:#4B9CD3
+    style PositiveYieldResult fill:#66CDAA
+    style StrategyRisks fill:#CD5C5C
 ```
 
 ### Technical Implementation
@@ -367,32 +369,32 @@ These notebooks follow a pedagogical approach that:
 
 ```mermaid
 graph TB
-    subgraph "Skew Concepts"
-        A[Spot-Vol Correlation] --> B[Skew Curve Shape]
-        B --> C[Vanna Exposure]
-        C --> D[Delta-Hedged Risk Reversal]
+    subgraph SkewConcepts["Skew Concepts"]
+        SpotVolCorrelation["Spot-Vol Correlation"] --> SkewCurveShape["Skew Curve Shape"]
+        SkewCurveShape --> VannaExposure["Vanna Exposure"]
+        VannaExposure --> DeltaHedgedRiskReversal["Delta-Hedged Risk Reversal"]
     end
     
-    subgraph "Crypto Funding Concepts"
-        E[Perpetual Futures] --> F[Funding Rate Mechanism]
-        F --> G[Delta Neutral Strategy]
-        G --> H[Market Neutral Returns]
+    subgraph CryptoFundingConcepts["Crypto Funding Concepts"]
+        PerpetualFutures["Perpetual Futures"] --> FundingRateMechanism["Funding Rate Mechanism"]
+        FundingRateMechanism --> DeltaNeutralStrategy["Delta Neutral Strategy"]
+        DeltaNeutralStrategy --> MarketNeutralReturns["Market Neutral Returns"]
     end
     
-    subgraph "Common Themes"
-        I[Delta Neutrality] --> J[Price Risk Elimination]
-        K[Market Structure] --> L[Arbitrage Opportunities]
+    subgraph CommonThemes["Common Themes"]
+        DeltaNeutrality["Delta Neutrality"] --> PriceRiskElimination["Price Risk Elimination"]
+        MarketStructure["Market Structure"] --> ArbitrageOpportunities["Arbitrage Opportunities"]
     end
     
-    D --> I
-    G --> I
-    B --> K
-    F --> K
+    DeltaHedgedRiskReversal --> DeltaNeutrality
+    DeltaNeutralStrategy --> DeltaNeutrality
+    SkewCurveShape --> MarketStructure
+    FundingRateMechanism --> MarketStructure
     
-    style A fill:#ff6b6b
-    style E fill:#4ecdc4
-    style I fill:#ffe66d
-    style K fill:#95e1d3
+    style SpotVolCorrelation fill:#1B3A6B
+    style PerpetualFutures fill:#4B9CD3
+    style DeltaNeutrality fill:#DAA520
+    style MarketStructure fill:#20B2AA
 ```
 
 ---
