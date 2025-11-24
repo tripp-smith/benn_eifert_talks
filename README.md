@@ -11,6 +11,26 @@ This project consists of two main educational notebooks, each derived from a tra
 
 Both notebooks combine theoretical explanations with hands-on Python implementations, visualizations, and simulations to make complex financial concepts accessible and interactive.
 
+```mermaid
+mindmap
+  root((Benn Eifert<br/>Talks))
+    Skew Concepts
+      Spot-Vol Correlation
+      Volatility Skew Curve
+      Vanna Risk
+      Delta Hedging
+    Crypto Funding
+      Perpetual Futures
+      Funding Rate Mechanism
+      Delta Neutral Strategy
+      Market Neutral Returns
+    Learning Approach
+      Theory First
+      Code Implementation
+      Data Visualization
+      Real Market Examples
+```
+
 ---
 
 ## 📖 Notebook 1: Understanding Options Skew and Vanna (`skew.ipynb`)
@@ -26,6 +46,18 @@ Both notebooks combine theoretical explanations with hands-on Python implementat
 - **Data Analysis:** Uses real market data (SPY vs VIX) from 2020-2024 to show a correlation of approximately -0.71
 - **Key Insight:** When markets sell off, volatility spikes (the "fear index" rises)
 
+```mermaid
+graph LR
+    A[Market Sell-Off<br/>Spot Price ↓] --> B[Volatility Spikes<br/>VIX ↑]
+    B --> C[Negative Correlation<br/>ρ ≈ -0.71]
+    C --> D[Downward Skew<br/>OTM Puts > OTM Calls]
+    
+    style A fill:#ff6b6b
+    style B fill:#4ecdc4
+    style C fill:#ffe66d
+    style D fill:#95e1d3
+```
+
 #### Part 2: Visualizing the Skew Curve
 - **Skew Definition:** The relationship between strike price (x-axis) and implied volatility (y-axis)
 - **Equity Markets (SPY):** Downward-sloping "smirk" - OTM puts have higher IV than OTM calls
@@ -37,12 +69,53 @@ Both notebooks combine theoretical explanations with hands-on Python implementat
 - **Sticky Delta (Floating Strike):** The volatility curve shifts sideways with spot, maintaining the same structure relative to moneyness
 - **Visualization:** Shows how a 5% spot drop affects the volatility surface under both paradigms
 
+```mermaid
+graph TB
+    Initial[Initial Spot = $100<br/>ATM Vol = 20%] --> Move[Spot Drops 5%<br/>New Spot = $95]
+    
+    Move --> StickyStrike[Sticky Strike Model]
+    Move --> StickyDelta[Sticky Delta Model]
+    
+    StickyStrike --> Fixed[IV at Strike $100<br/>Remains Constant<br/>IV = 20%]
+    StickyStrike --> NewATM1[New ATM Strike $95<br/>IV = 20.33%<br/>Higher than old ATM]
+    
+    StickyDelta --> Shift[Curve Shifts Sideways<br/>Maintains Moneyness Structure]
+    StickyDelta --> NewATM2[New ATM Strike $95<br/>Inherits Old ATM Vol<br/>IV = 20%]
+    StickyDelta --> OldATM[Old ATM Strike $100<br/>Now OTM Call<br/>IV = 19.94%]
+    
+    style StickyStrike fill:#ff6b6b
+    style StickyDelta fill:#90ee90
+    style NewATM2 fill:#87ceeb
+```
+
 #### Part 3: Vanna and the Delta-Hedged Risk Reversal
 - **The Trade:** Long 25-delta put, short 25-delta call, delta-hedged
 - **Black-Scholes Implementation:** Complete option pricing engine with Delta calculations
 - **Vanna Effect:** The cross-partial derivative showing how Delta changes with volatility
 - **PnL Heatmap:** 3D visualization showing portfolio performance across all spot-vol combinations
 - **Key Insight:** The portfolio profits when spot falls AND volatility rises (normal equity skew), but loses when spot falls while volatility also falls
+
+```mermaid
+graph TB
+    Start[Initial Portfolio Setup] --> LongPut[Long 25Δ Put<br/>K = $90]
+    Start --> ShortCall[Short 25Δ Call<br/>K = $112]
+    Start --> DeltaHedge[Buy Stock<br/>Δ Hedge]
+    
+    LongPut --> Portfolio[Delta-Neutral Portfolio<br/>Δ ≈ 0]
+    ShortCall --> Portfolio
+    DeltaHedge --> Portfolio
+    
+    Portfolio --> ScenarioA{Market Scenario}
+    
+    ScenarioA -->|Spot ↓ + Vol ↑| Profit[💰 PROFIT<br/>Long Vega Exposure]
+    ScenarioA -->|Spot ↓ + Vol ↓| Loss[❌ LOSS<br/>Vanna Risk]
+    ScenarioA -->|Spot ↑ + Vol ↓| Profit2[💰 PROFIT<br/>Short Vega Exposure]
+    
+    style Profit fill:#90ee90
+    style Profit2 fill:#90ee90
+    style Loss fill:#ff6b6b
+    style Portfolio fill:#87ceeb
+```
 
 ### Technical Implementation
 - **Libraries Used:** `numpy`, `pandas`, `matplotlib`, `scipy.stats`, `yfinance`
@@ -74,11 +147,52 @@ After working through this notebook, you will understand:
   - If $F < S$: Negative funding rate → Shorts pay Longs
 - **Mathematical Framework:** Integration formula for accumulated funding over time
 
+```mermaid
+graph TB
+    Market[Market Conditions] --> Check{Compare F vs S}
+    
+    Check -->|F > S<br/>Futures Expensive| HighDemand[Excess Demand<br/>for Long Positions]
+    HighDemand --> PositiveRate[Positive Funding Rate<br/>r > 0]
+    PositiveRate --> Payment1[Longs Pay Shorts<br/>Every 8 Hours]
+    
+    Check -->|F < S<br/>Futures Cheap| LowDemand[Excess Supply<br/>Short Positions]
+    LowDemand --> NegativeRate[Negative Funding Rate<br/>r < 0]
+    NegativeRate --> Payment2[Shorts Pay Longs<br/>Every 8 Hours]
+    
+    Payment1 --> Convergence[Price Convergence<br/>F → S]
+    Payment2 --> Convergence
+    
+    style PositiveRate fill:#90ee90
+    style NegativeRate fill:#ff6b6b
+    style Convergence fill:#87ceeb
+```
+
 #### Part 2: Understanding "Delta Neutrality"
 - **The Strategy:** Long spot + Short perpetual futures
 - **Delta Neutral Portfolio:** Price movements cancel out ($\Delta P = 0$)
 - **The Key Insight:** While price action cancels, funding income does not
 - **Return Formula:** `Return = (Spot PnL - Futures PnL) + Funding Income ≈ 0 + Positive Yield`
+
+```mermaid
+graph LR
+    Capital[Initial Capital<br/>$10,000] --> LongSpot[Long Spot<br/>Buy Tokens]
+    Capital --> ShortPerp[Short Perpetual<br/>Sell Futures]
+    
+    LongSpot --> PriceMove1[Price ↑<br/>+Δx]
+    ShortPerp --> PriceMove2[Price ↑<br/>-Δx]
+    
+    PriceMove1 --> NetDelta[Net Delta = 0<br/>Price Risk Canceled]
+    PriceMove2 --> NetDelta
+    
+    ShortPerp --> Funding[Collect Funding<br/>r > 0]
+    Funding --> TotalReturn[Total Return<br/>≈ Funding Income<br/>50-100% Annualized]
+    
+    NetDelta --> TotalReturn
+    
+    style NetDelta fill:#87ceeb
+    style Funding fill:#90ee90
+    style TotalReturn fill:#ffe66d
+```
 
 #### Part 3: Simulation with Realistic Market Data
 - **Market Model:** Geometric Brownian Motion for price simulation
@@ -94,6 +208,35 @@ After working through this notebook, you will understand:
   4. Collect funding payments daily
 - **Results:** Demonstrates how the strategy can achieve 50-100% annualized returns on a market-neutral basis
 - **Risk Factors:** Operational risk, exchange risk, margin management (not price risk)
+
+```mermaid
+flowchart TD
+    Start[Start: $10,000] --> BuySpot[Buy Spot Tokens<br/>$10,000 worth]
+    BuySpot --> ShortPerp[Short Perpetual Futures<br/>$10,000 notional]
+    
+    ShortPerp --> DailyLoop{Daily Loop}
+    
+    DailyLoop --> CalcSpot[Calculate Spot PnL<br/>Price Change × Holdings]
+    DailyLoop --> CalcFutures[Calculate Futures PnL<br/>-Price Change × Holdings]
+    DailyLoop --> CollectFunding[Collect Funding<br/>Position × Funding Rate]
+    
+    CalcSpot --> NetPnL[Net PnL Calculation]
+    CalcFutures --> NetPnL
+    CollectFunding --> NetPnL
+    
+    NetPnL --> Check{Price Risk?}
+    Check -->|Spot PnL + Futures PnL| Canceled[≈ 0<br/>Delta Neutral]
+    Check -->|Funding Income| Positive[Positive Yield<br/>50-100% Annualized]
+    
+    Canceled --> TotalReturn[Total Return]
+    Positive --> TotalReturn
+    
+    TotalReturn --> Risks[⚠️ Risks:<br/>Operational, Exchange,<br/>Margin Management]
+    
+    style Canceled fill:#87ceeb
+    style Positive fill:#90ee90
+    style Risks fill:#ff6b6b
+```
 
 ### Technical Implementation
 - **Libraries Used:** `numpy`, `pandas`, `matplotlib`
@@ -219,6 +362,38 @@ These notebooks follow a pedagogical approach that:
 
 ### From `crypto_funding.ipynb`:
 > "Perpetual futures funding rates can create opportunities for market-neutral returns of 50-100% annually. The strategy works because you're being paid to take operational and exchange risks that others cannot or will not take."
+
+### Conceptual Relationship Diagram
+
+```mermaid
+graph TB
+    subgraph "Skew Concepts"
+        A[Spot-Vol Correlation] --> B[Skew Curve Shape]
+        B --> C[Vanna Exposure]
+        C --> D[Delta-Hedged Risk Reversal]
+    end
+    
+    subgraph "Crypto Funding Concepts"
+        E[Perpetual Futures] --> F[Funding Rate Mechanism]
+        F --> G[Delta Neutral Strategy]
+        G --> H[Market Neutral Returns]
+    end
+    
+    subgraph "Common Themes"
+        I[Delta Neutrality] --> J[Price Risk Elimination]
+        K[Market Structure] --> L[Arbitrage Opportunities]
+    end
+    
+    D --> I
+    G --> I
+    B --> K
+    F --> K
+    
+    style A fill:#ff6b6b
+    style E fill:#4ecdc4
+    style I fill:#ffe66d
+    style K fill:#95e1d3
+```
 
 ---
 
