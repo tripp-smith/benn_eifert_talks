@@ -211,6 +211,53 @@ graph LR
 - **Results:** Demonstrates how the strategy can achieve 50-100% annualized returns on a market-neutral basis
 - **Risk Factors:** Operational risk, exchange risk, margin management (not price risk)
 
+#### Part 5: Why does this exist? (CME vs. Crypto)
+- **Risk Premium Analysis:** Explains why crypto perpetual funding rates are higher than CME Bitcoin futures
+- **Risk Factors:** Operational risk, exchange risk, liquidation risk, and smart contract risk
+- **Market Efficiency:** CME Bitcoin has lower spreads due to regulation and institutional access
+- **Bear Market Scenario:** Demonstrates what happens when funding rates turn negative
+
+#### Part 6: Historical Analysis with Real Bitcoin Data
+- **Data Source:** Real Bitcoin perpetual futures data from Kraken Futures API (2020-2024)
+- **Analysis Components:**
+  - Cumulative returns calculation over 5 years
+  - Annualized rolling yield analysis
+  - Bull vs. bear market identification and performance comparison
+  - Maximum drawdown analysis
+  - Comprehensive visualization of strategy performance
+- **Key Insights:** Real-world validation of the strategy's performance across different market regimes
+
+#### Part 7: Margin Requirements and Liquidation Risk
+- **Mathematical Definitions:**
+  - Initial margin and maintenance margin requirements
+  - Liquidation price calculation for short positions
+  - Margin health monitoring formulas
+- **Leverage Analysis:** How different leverage levels (1x, 2x, 3x) affect liquidation risk
+- **Visualization:** Margin health over time under various scenarios
+- **Key Insight:** Higher leverage amplifies liquidation risk non-linearly
+
+#### Part 8: Transaction Costs and Break-Even Analysis
+- **The "Rate of Accumulation" vs "Fixed Cost" Analogy:** Understanding how fees impact profitability
+- **Break-Even Heatmap:** Visualization showing break-even time across different funding rates and fee structures
+- **Break-Even Formula:** Mathematical derivation of how long it takes to recover transaction costs
+- **Practical Implications:** Ideal trade parameters for profitability
+
+#### Part 9: Black Swan Stress Test - Correlation Convergence
+- **Understanding Correlation Risk:** How correlations between assets change during market crashes
+- **Stress Test Simulation:** Multi-token portfolio performance during black swan events
+- **Key Finding:** Delta neutral ≠ risk free - correlation convergence can cause simultaneous losses
+- **Cash Flow Drag:** How negative funding rates across multiple positions create multiplicative losses
+- **Practical Implications:** Risk management strategies for extreme market conditions
+
+#### Part 10: Comparative Analysis - Futures Curve vs Perpetuals
+- **Visual Metaphor:** Converging series (quarterly futures) vs parallel line (perpetuals)
+- **Mathematical Comparison:**
+  - Quarterly Futures: Locked-in yield (basis trading)
+  - Perpetual Futures: Probabilistic yield (funding rate)
+- **Detailed Comparison Table:** Side-by-side analysis of both strategies
+- **Mathematical Derivation:** Futures basis formula and annualized yield calculation
+- **When to Use Each Strategy:** Guidance on selecting the appropriate approach
+
 ```mermaid
 flowchart TD
     StrategyStart["Start: $10,000"] --> BuySpotTokens["Buy Spot Tokens<br/>$10,000 worth"]
@@ -241,9 +288,13 @@ flowchart TD
 ```
 
 ### Technical Implementation
-- **Libraries Used:** `numpy`, `pandas`, `matplotlib`
+- **Libraries Used:** `numpy`, `pandas`, `matplotlib`, `requests`
+- **Data Sources:** 
+  - Synthetic data generation for initial simulations
+  - Real Bitcoin data from Kraken Futures API for historical analysis (2020-2024)
 - **Simulation Model:** Geometric Brownian Motion with momentum-correlated funding rates
 - **Backtesting:** Full portfolio simulation tracking spot PnL, futures PnL, and funding income
+- **Advanced Analysis:** Multi-token portfolio stress testing, margin calculations, break-even analysis
 
 ### Learning Outcomes
 After working through this notebook, you will understand:
@@ -252,6 +303,11 @@ After working through this notebook, you will understand:
 - How to construct a delta-neutral portfolio
 - Why funding rate arbitrage can generate high returns without directional risk
 - The operational and exchange risks involved (vs. price risk)
+- How to analyze historical performance using real market data
+- Margin requirements and liquidation risk calculations
+- How transaction costs impact profitability and break-even analysis
+- Correlation risk during black swan events and why delta neutral ≠ risk free
+- The trade-offs between quarterly futures basis trading and perpetual funding arbitrage
 
 ---
 
@@ -278,7 +334,7 @@ benn_eifert_talks/
 Both notebooks require standard Python data science libraries:
 
 ```bash
-pip install numpy pandas matplotlib scipy yfinance
+pip install numpy pandas matplotlib scipy yfinance requests
 ```
 
 **For `skew.ipynb` specifically:**
@@ -286,7 +342,8 @@ pip install numpy pandas matplotlib scipy yfinance
 - `scipy` - For statistical functions (normal distribution for Black-Scholes)
 
 **For `crypto_funding.ipynb`:**
-- Standard libraries only (no external data dependencies)
+- `requests` - For fetching real Bitcoin data from Kraken Futures API (optional, for Part 6)
+- Standard libraries (`numpy`, `pandas`, `matplotlib`) for simulations and analysis
 
 ### Running the Notebooks
 
@@ -303,7 +360,9 @@ pip install numpy pandas matplotlib scipy yfinance
 
 ### Note on Data
 - **`skew.ipynb`:** Downloads live data from Yahoo Finance. Requires internet connection and may have rate limits.
-- **`crypto_funding.ipynb`:** Uses synthetic data generation. No external data required.
+- **`crypto_funding.ipynb`:** 
+  - Parts 1-5: Uses synthetic data generation. No external data required.
+  - Part 6: Fetches real Bitcoin data from Kraken Futures API (2020-2024). Requires internet connection. The notebook includes functions to fetch and save this data.
 
 ---
 
